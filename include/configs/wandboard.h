@@ -161,7 +161,7 @@
 			"fi; "	\
 		"fi\0" \
 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
-		"root=${mmcroot}; run videoargs\0" \
+		"root=${mmcroot} \0" \
 	"fdt_file_autodetect=on\0" \
 	"display_autodetect=on\0" \
 	"videoargs=" \
@@ -181,6 +181,7 @@
 				"else " \
 					"setenv fbmem ${fbmem},10M; " \
 				"fi; " \
+				"fdt set /soc/aips-bus/spba-bus/ecspi/ads7846 status disable; " \
 				"setexpr nextcon ${nextcon} + 1; " \
 			"else " \
 				"echo '- no FWBADAPT-7WVGA-LCD-F07A-0102 display';" \
@@ -201,11 +202,12 @@
 	"bootscript=echo Running bootscript from mmc ...; " \
 		"source\0" \
 	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
-	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}; fdt addr ${fdt_addr}\0" \
 	"mmcboot=echo Booting from mmc ...; " \
 		"run mmcargs; " \
 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
 			"if run loadfdt; then " \
+				"run videoargs; " \
 				"bootz ${loadaddr} - ${fdt_addr}; " \
 			"else " \
 				"if test ${boot_fdt} = try; then " \
